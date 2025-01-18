@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>WANDERER360 - Trip Results</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="container classy-bg">
+    <div class="results-content fade-in">
+      <h1 class="results-title">Your Kerala Tour Plan</h1>
+      <div id="resultsContainer" class="results-container">
+        <!-- Recommendations will be dynamically inserted here -->
+      </div>
+      <a href="file.html" class="cta-button">Plan Another Trip</a>
+    </div>
+  </div>
+
+  <script>
+    // Function to fetch and display results
+    async function fetchResults() {
+      const params = new URLSearchParams(window.location.search);
+      const place = params.get('place');
+      const budget = params.get('budget');
+      const preferences = params.get('preferences');
+
+      try {
+        const response = await fetch('http://127.0.0.1:5000/plan_trip', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ place, budget, preferences }),
+        });
+
+        const recommendations = await response.json();
+
+        const resultsContainer = document.getElementById('resultsContainer');
+        if (recommendations.length > 0) {
+          recommendations.forEach((place, index) => {
+            const placeElement = document.createElement('div');
+            placeElement.classList.add('result-item');
+            placeElement.innerHTML = `
+              <h2>${index + 1}. ${place.name}</h2>
+              <p><strong>Address:</strong> ${place.address}</p>
+              <p><strong>Rating:</strong> ${place.rating}</p>
+              <p><strong>Estimated Cost:</strong> ₹${place.estimated_cost}</p>
+            `;
+            resultsContainer.appendChild(placeElement);
+          });
+        } else {
+          resultsContainer.innerHTML = '<p>No destinations found within your budget and preferences.</p>';
+        }
+      } catch (error) {
+        console.error('Error fetching results:', error);
+        const resultsContainer = document.getElementById('resultsContainer');
+        resultsContainer.innerHTML = '<p>There was an error fetching your trip plan. Please try again later.</p>';
+      }
+    }
+
+    // Load results on page load
+    fetchResults();
+  </script>
+</body>
+</html>
