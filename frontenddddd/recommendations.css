@@ -1,0 +1,88 @@
+/* Journey map container */
+.journey-map {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 30px;
+  margin-top: 30px;
+  padding: 20px;
+  border: 2px solid #ddd;
+  border-radius: 12px;
+  background-color: #f9f9f9;
+}
+
+/* Journey step block */
+.journey-step {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  position: relative;
+}
+
+.journey-step .icon {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  background-color: #2980b9;
+  color: #fff;
+  font-size: 24px;
+  font-weight: bold;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 10px;
+}
+
+.journey-step .info {
+  width: 300px;
+  padding: 10px;
+  background-color: #fff;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  font-size: 14px;
+  text-align: left;
+}
+
+.journey-step .info h3 {
+  margin: 0 0 5px;
+  font-size: 16px;
+  color: #333;
+}
+
+.journey-step .info p {
+  margin: 5px 0;
+  font-size: 14px;
+  color: #555;
+}
+
+/* Arrow styles */
+.journey-arrow {
+  width: 20px;
+  height: 40px;
+  position: relative;
+}
+
+.journey-arrow:before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 50%;
+  width: 2px;
+  height: 100%;
+  background-color: #2980b9;
+  transform: translateX(-50%);
+}
+
+.journey-arrow:after {
+  content: "";
+  position: absolute;
+  bottom: -10px;
+  left: 50%;
+  width: 0;
+  height: 0;
+  border-style: solid;
+  border-width: 10px 5px 0 5px;
+  border-color: #2980b9 transparent transparent transparent;
+  transform: translateX(-50%);
+}

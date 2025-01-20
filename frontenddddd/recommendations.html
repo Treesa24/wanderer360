@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Recommendations</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body onload="fetchRecommendations()">
+  <div class="container classy-bg">
+    <div class="planner-content fade-in">
+      <h1 class="planner-title">Your Travel Journey</h1>
+      
+      <!-- Dropdown for selecting preference -->
+      <label for="preference">Select Your Preference:</label>
+      <select id="preference" name="preference">
+        <option value="beach">Beach</option>
+        <option value="adventure">Adventure</option>
+        <option value="cultural">Cultural</option>
+      </select>
+
+      <button onclick="fetchRecommendations()">Get Itinerary</button>
+
+      <div id="journey-map" class="journey-map"></div>
+    </div>
+  </div>
+
+  <script>
+    function fetchRecommendations() {
+      // Get the selected preference from the dropdown
+      const userPreference = document.getElementById('preference').value;
+
+      const userData = {
+        place: "kochi",
+        days: 5,
+        budget: 1000,
+        preferences: userPreference,
+      };
+
+      fetch('http://127.0.0.1:5000/generate-itinerary', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(userData),
+      })
+      .then(response => response.json())
+      .then(data => { 
+        const journeyMap = document.getElementById('journey-map');
+
+        if (data && data.itinerary && Array.isArray(data.itinerary)) { 
+          const itineraries = data.itinerary; 
+          journeyMap.innerHTML = `
+            <h2>Suggested Itineraries:</h2>
+            <ul>
+              ${itineraries.map((item, index) => `
+                <li>
+                  <button onclick="selectItinerary(${index})">${item.name}</button>
+                  (Duration: ${item.duration} days)
+                </li>
+              `).join('')}
+            </ul>`;
+        } else {
+          journeyMap.innerHTML = `<p>No itinerary available. Please try again later.</p>`;
+        }
+      })
+      .catch(error => {
+        console.error("Error fetching data:", error); 
+        document.getElementById('journey-map').innerHTML = `<p style="color: red;">Error: ${error.message}</p>`;
+      });
+    }
+
+    function selectItinerary(index) {
+      // Fetch selected itinerary data and store in localStorage
+      const userPreference = document.getElementById('preference').value;
+
+      fetch('http://127.0.0.1:5000/generate-itinerary', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          place: "kochi",
+          days: 5,
+          budget: 1000,
+          preferences: userPreference,
+        }),
+      })
+      .then(response => response.json())
+      .then(data => {
+        const selectedItinerary = data.itinerary[index];
+        localStorage.setItem('selectedItinerary', JSON.stringify(selectedItinerary));
+        window.location.href = 'roadmap.html';
+      });
+    }
+  </script>
+</body>
+</html>

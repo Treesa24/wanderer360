@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Travel Roadmap</title>
+  <link rel="stylesheet" href="roadmap.css">
+</head>
+<body>
+  <div id="roadmap-container">
+    <h1>Travel Roadmap</h1>
+
+    <!-- Preference Selection Form -->
+    <div id="preference-selector">
+      <label for="preference-selection">Select Your Preference:</label>
+      <select id="preference-selection">
+        <option value="">--Select a Preference--</option>
+        <option value="beach">Beach</option>
+        <option value="adventure">Adventure</option>
+        <option value="cultural">Cultural</option>
+      </select>
+      <button onclick="getItinerary()">Get Itinerary</button>
+    </div>
+
+    <!-- Itinerary Selection -->
+    <div id="itinerary-selector">
+      <label for="itinerary-selection">Select Itinerary:</label>
+      <select id="itinerary-selection">
+        <option value="">--Select an Itinerary--</option>
+      </select>
+      <button onclick="showPlaceDetails()">Show Details</button>
+    </div>
+
+    <!-- Displaying Itinerary and Map -->
+    <div id="map" style="height: 400px; width: 100%; margin-top: 20px;"></div>
+    <div id="timeline" style="margin-top: 20px;"></div>
+  </div>
+
+  <script async defer 
+    src="https://maps.googleapis.com/maps/api/js?key=AIzaSyC0g3bnD3gh9N0esb1iEvL2Lb85a_5r9jc&libraries=places&callback=initMap">
+  </script>
+
+  <script>
+    const itineraries = {
+      beach: [
+        { name: 'Fort Kochi Beach', latitude: 9.9656, longitude: 76.2212, description: 'Popular tourist spot', travelDetails: 'By taxi or auto', estimatedTime: '2 days' },
+        { name: 'Puthenthodu Beach', latitude: 9.9661, longitude: 76.2252, description: 'Serene and less crowded', travelDetails: 'By local bus or car', estimatedTime: '2 days' },
+        { name: 'Mahatma Gandhi Beach', latitude: 9.9420, longitude: 76.2271, description: 'A historical beach with great views', travelDetails: 'By car or auto', estimatedTime: '2 days' },
+        { name: 'Cherai Beach', latitude: 10.0800, longitude: 76.2320, description: 'A tranquil beach with clean waters', travelDetails: 'By taxi', estimatedTime: '2 days' },
+        { name: 'Kuzhupilly Beach', latitude: 10.0862, longitude: 76.2225, description: 'Quiet and peaceful beach', travelDetails: 'By car', estimatedTime: '2 days' },
+        { name: 'Puthuvype Beach', latitude: 9.9333, longitude: 76.2115, description: 'Known for its stunning sunsets', travelDetails: 'By car or taxi', estimatedTime: '2 days' },
+        { name: 'Vypin Beach', latitude: 10.0221, longitude: 76.2269, description: 'A scenic and peaceful location', travelDetails: 'By local bus or car', estimatedTime: '2 days' },
+        { name: 'Beach Road Beach', latitude: 9.9710, longitude: 76.2219, description: 'A famous beach near Fort Kochi', travelDetails: 'By taxi or walking', estimatedTime: '2 days' },
+        { name: 'Valappu Beach', latitude: 10.0305, longitude: 76.3144, description: 'Peaceful, with a serene atmosphere', travelDetails: 'By taxi', estimatedTime: '2 days' },
+        { name: 'Munambam Beach', latitude: 10.0820, longitude: 76.2452, description: 'Known for its quiet surroundings', travelDetails: 'By car or bus', estimatedTime: '2 days' },
+        { name: 'Half Moon Beach Kochi', latitude: 10.0420, longitude: 76.2460, description: 'A hidden gem, great for relaxation', travelDetails: 'By boat or taxi', estimatedTime: '2 days' },
+        { name: 'Chappa Kadappuram (Malipuram Beach)', latitude: 10.0731, longitude: 76.2489, description: 'Remote and tranquil beach', travelDetails: 'By taxi or boat', estimatedTime: '2 days' },
+        { name: 'Elamkunnapuzha BLUE WAVES Beach', latitude: 9.9625, longitude: 76.1827, description: 'Ideal for a peaceful beach day', travelDetails: 'By taxi', estimatedTime: '2 days' },
+        { name: 'Fortkochi Beach Walkway', latitude: 9.9650, longitude: 76.2250, description: 'A picturesque walkway by the beach', travelDetails: 'By walking', estimatedTime: '2 days' }
+      ],
+      adventure: [
+        { name: 'Kalypso Adventures', latitude: 9.9750, longitude: 76.2760, description: 'Adventure park offering various outdoor activities', travelDetails: 'By car', estimatedTime: '2 days' },
+        { name: 'Kochi Kayaking - Kalypso Adventures', latitude: 9.9790, longitude: 76.2900, description: 'Kayaking tours in Kochi', travelDetails: 'By boat', estimatedTime: '2 days' },
+        { name: 'Secret Routes Kayaking Kadamakkudy', latitude: 9.9662, longitude: 76.3152, description: 'Kayaking experience on Kadamakkudy backwaters', travelDetails: 'By boat', estimatedTime: '2 days' },
+        { name: 'Explore Adventures & Camps', latitude: 10.1430, longitude: 76.2745, description: 'Trekking, camping, and outdoor adventure experiences', travelDetails: 'By car', estimatedTime: '2 days' },
+        { name: 'Inter Dive Adventure Sports Center', latitude: 9.9810, longitude: 76.2703, description: 'Scuba diving and other water sports', travelDetails: 'By car', estimatedTime: '2 days' },
+        { name: 'Luminance Water Sports', latitude: 9.9915, longitude: 76.2810, description: 'Water sports activities and more', travelDetails: 'By boat', estimatedTime: '2 days' },
+        { name: 'Thrilltopia Adventure Sports and Tours Pvt Ltd', latitude: 9.9955, longitude: 76.2842, description: 'Outdoor adventure park offering various sports', travelDetails: 'By car', estimatedTime: '2 days' },
+        { name: 'A Team Adventures', latitude: 10.0877, longitude: 76.2345, description: 'Camping, trekking, and other adventure activities', travelDetails: 'By car', estimatedTime: '2 days' },
+        { name: 'Kayakify Kochi', latitude: 9.9405, longitude: 76.2325, description: 'Kayak rentals and guided kayaking tours', travelDetails: 'By boat', estimatedTime: '2 days' },
+        { name: 'SUP in Kochi', latitude: 9.9550, longitude: 76.2630, description: 'Stand Up Paddle boarding in Kochi', travelDetails: 'By water', estimatedTime: '2 days' },
+        { name: 'Funtura Kochi', latitude: 10.0568, longitude: 76.2654, description: 'Adventure park for all ages', travelDetails: 'By car', estimatedTime: '2 days' },
+        { name: 'Kerala Adventure Tourism', latitude: 9.9490, longitude: 76.2760, description: 'Adventure tourism activities across Kerala', travelDetails: 'By car', estimatedTime: '2 days' },
+        { name: 'Paddle Quest Kayaking', latitude: 10.0055, longitude: 76.2721, description: 'Kayaking tours along scenic routes', travelDetails: 'By boat', estimatedTime: '2 days' },
+        { name: 'Raw Adventure', latitude: 9.9420, longitude: 76.2154, description: 'Trekking and camping in Kerala’s wilds', travelDetails: 'By car', estimatedTime: '2 days' },
+        { name: 'Legacy of Kochi Tuk-Tuk Tour', latitude: 9.9498, longitude: 76.2599, description: 'Explore Kochi via tuk-tuk ride', travelDetails: 'By tuk-tuk', estimatedTime: '2 days' }
+      ],
+      cultural: [
+        { name: 'Cochin Cultural Centre', latitude: 9.9390, longitude: 76.2800, description: 'Experience Kathakali, Kalaripayattu, and Mohiniyattam', travelDetails: 'By car or auto', estimatedTime: '2 days' },
+        { name: 'Kathakali Show By Kochi Folklore Odeum', latitude: 9.9350, longitude: 76.2805, description: 'Traditional dance and art performances', travelDetails: 'By car or walk', estimatedTime: '2 days' },
+        { name: 'Kerala Folklore Museum', latitude: 9.9398, longitude: 76.2780, description: 'Museum showcasing Kerala’s cultural heritage', travelDetails: 'By car', estimatedTime: '2 days' },
+        { name: 'Kerala Museum', latitude: 9.9386, longitude: 76.2809, description: 'Museum with Kerala’s historical artifacts', travelDetails: 'By car', estimatedTime: '2 days' },
+        { name: 'Don Bosco Cultural Centre', latitude: 9.9375, longitude: 76.2753, description: 'Cultural center with performances and exhibits', travelDetails: 'By car', estimatedTime: '2 days' },
+        { name: 'Folklore Cultural Theatre', latitude: 9.9471, longitude: 76.2752, description: 'Cultural performances and theater shows', travelDetails: 'By car', estimatedTime: '2 days' },
+        { name: 'Indian Cultural and Heritage Centre', latitude: 9.9240, longitude: 76.2660, description: 'Offers art, dance, and music performances', travelDetails: 'By car', estimatedTime: '2 days' },
+        { name: 'Indo-Portuguese Museum', latitude: 9.9406, longitude: 76.2759, description: 'Museum showcasing Portuguese influence in Kochi', travelDetails: 'By car', estimatedTime: '2 days' },
+        { name: 'Cochin Carnival Judging Point', latitude: 9.9750, longitude: 76.2780, description: 'Kochi carnival events and cultural celebrations', travelDetails: 'By car', estimatedTime: '2 days' },
+        { name: 'Bhaskareeyam Convention Centre', latitude: 9.9688, longitude: 76.2755, description: 'Venue for cultural and traditional events', travelDetails: 'By car', estimatedTime: '2 days' },
+        { name: 'Mahakavi G Memorial Cultural Centre', latitude: 9.9715, longitude: 76.2687, description: 'A center dedicated to Kerala’s literary heritage', travelDetails: 'By car', estimatedTime: '2 days' },
+        { name: 'Rajagiri Sports and Cultural Centre Kalamassery', latitude: 10.0302, longitude: 76.3585, description: 'Promotes sports and cultural events', travelDetails: 'By car', estimatedTime: '2 days' },
+        { name: 'Ideal Cultural Centre', latitude: 9.9845, longitude: 76.2390, description: 'Dedicated to Kerala’s folk art and performances', travelDetails: 'By car', estimatedTime: '2 days' }
+      ]
+    };
+
+    function getItinerary() {
+      const preference = document.getElementById('preference-selection').value;
+      const itinerarySelect = document.getElementById('itinerary-selection');
+      
+      // Clear existing options
+      itinerarySelect.innerHTML = '<option value="">--Select an Itinerary--</option>';
+
+      // Populate itineraries based on preference
+      itineraries[preference].forEach(itinerary => {
+        const option = document.createElement('option');
+        option.value = itinerary.name;
+        option.textContent = itinerary.name;
+        itinerarySelect.appendChild(option);
+      });
+    }
+
+    function showPlaceDetails() {
+      const preference = document.getElementById('preference-selection').value;
+      const itineraryName = document.getElementById('itinerary-selection').value;
+      const selectedItinerary = itineraries[preference].find(itinerary => itinerary.name === itineraryName);
+
+      if (selectedItinerary) {
+        const timelineDiv = document.getElementById('timeline');
+        const mapDiv = document.getElementById('map');
+
+        // Display details
+        timelineDiv.innerHTML = `
+          <h3>Itinerary Details</h3>
+          <p><strong>Description:</strong> ${selectedItinerary.description}</p>
+          <p><strong>Travel Details:</strong> ${selectedItinerary.travelDetails}</p>
+          <p><strong>Estimated Time:</strong> ${selectedItinerary.estimatedTime}</p>
+        `;
+        
+        // Initialize the map
+        const mapOptions = {
+          center: { lat: selectedItinerary.latitude, lng: selectedItinerary.longitude },
+          zoom: 15,
+        };
+        const map = new google.maps.Map(mapDiv, mapOptions);
+        const marker = new google.maps.Marker({
+          position: { lat: selectedItinerary.latitude, lng: selectedItinerary.longitude },
+          map: map,
+          title: selectedItinerary.name
+        });
+      }
+    }
+  </script>
+</body>
+</html>

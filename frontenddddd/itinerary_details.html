@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Itinerary Details</title>
+  <link rel="stylesheet" href="recommendations.css">
+</head>
+<body>
+  <h1>Itinerary Details</h1>
+  <div id="itinerary-details"></div>
+
+  <script>
+    const params = new URLSearchParams(window.location.search);
+    const selectedItineraryName = params.get('name');
+
+    // Fetch itinerary details from your backend 
+    // **Replace with your actual API endpoint**
+    fetch(`http://127.0.0.1:5000/generate-itinerary${encodeURIComponent(selectedItineraryName)}`) 
+      .then(response => {
+        if (!response.ok) {
+          throw new Error(`HTTP error! Status: ${response.status}`);
+        }
+        return response.json();
+      })
+      .then(itineraryData => { 
+        const detailsDiv = document.getElementById('itinerary-details');
+        detailsDiv.innerHTML = `
+          <h2>${itineraryData.name}</h2> 
+          <p>Duration: ${itineraryData.duration} days</p> 
+          <p>Description: ${itineraryData.description}</p> 
+          <p><strong>Points of Interest:</strong></p>
+          <ul>
+            ${itineraryData.pointsOfInterest.map(point => `<li>${point}</li>`).join('')}
+          </ul>
+          `; 
+      })
+      .catch(error => {
+        console.error("Error fetching itinerary details:", error); 
+        const detailsDiv = document.getElementById('itinerary-details');
+        detailsDiv.innerHTML = `<p>Error loading itinerary details.</p>`; 
+      }); 
+
+  </script>
+</body>
+</html>
